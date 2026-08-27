@@ -19,8 +19,13 @@ mongoose.connect(process.env.MONGO_URI)
 
 const userSchema = new mongoose.Schema({
   name: String,
-  age: Number,
-  email: String
+  email: String,
+  password: String,
+  role:{
+    type: String,
+    enum: ['manager', 'employee'],
+    default: 'employee'
+  }
 });
 
 const User = mongoose.model("User", userSchema);
@@ -37,13 +42,15 @@ app.get("/", (req, res) => {
 
 // this is the post request to create a new user in the database
 app.post("/api/users", async (req, res ,next ) => {
+  console.log(req.body);
     try {
       const user =await User.create({
         name : req.body.name,
-        age : req.body.age,
-        email : req.body.email
+        email : req.body.email,
+        password : req.body.password,
+        role : req.body.role  
       });
-      res.status(201).json(user);
+      res.status(201).json("User created successfully");
     } catch (error) {
       next(error);
       }
@@ -59,6 +66,33 @@ app.get("/api/users",async (req, res, next ) => {
         next(error);
     }
 });
+
+
+app.delete("/api/users/:id", async (req, res, next) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+
+    res.json({ message: "User deleted" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+app.put("/api/users/:id", async (req, res, next) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updatedUser);
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 
 app.use((err, req, res, next) => {
 //   console.error(err.stack);

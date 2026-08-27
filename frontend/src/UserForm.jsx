@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 
 
-function UserForm() {
+function UserForm( {onAddUser})  {
     const[FormData, setFormData] = useState({
         name: "",
         age: "",
@@ -11,6 +11,7 @@ function UserForm() {
 
 
     const handleChange = (e) => {
+        // console.log(FormData);
         setFormData({
             ...FormData, [e.target.name]: e.target.value
         });
@@ -27,7 +28,10 @@ function UserForm() {
                 body: JSON.stringify(FormData)
             });
             const data = await response.json();
-            console.log(data);
+            // console.log(data);
+            onAddUser(data);
+            setFormData({ name: "", age: "", email: "" }); // Clear the form after submission
+
         } catch (error) {
             console.error(error);
         }
@@ -37,10 +41,10 @@ function UserForm() {
     return (
         <>
         <form action="">
-            <input type="text" placeholder="Name" onChange={handleChange} />
-            <input type="number" placeholder="Age" onChange={handleChange} />
-            <input type="email" placeholder="Email" onChange={handleChange} />
-            <button type="submit" onClick={handleSubmit}   >Add User</button>
+            <input name="name" type="text" placeholder="Name" onChange={handleChange} />
+            <input name="age" type="number" placeholder="Age" onChange={handleChange} />
+            <input name="email" type="email" placeholder="Email" onChange={handleChange} />
+            <button type="submit" onClick={handleSubmit}   >Add User</button>   
         </form>
 
         </>
