@@ -6,6 +6,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Task from "./models/Task.js";
 import mongoose from "mongoose";
+import authMiddleware from "./middleware/authMiddleware.js"; 
+
 
 
 const app = express();// in simple words this line creates an instance of the Express application, which is used to define routes, middleware, and other server configurations. It serves as the main entry point for handling incoming HTTP requests and sending responses back to clients. then app.use(express.json())- this line is used to parse incoming JSON data in the request body.
@@ -68,26 +70,71 @@ app.post("/api/users", async (req, res ,next ) => {
       }
   });
 
-  // this is the post request to login a user and generate a JWT token
-  app.post("/api/login", async (req, res) => {
+  // this is the post request to register a new user
+
+app.post("/api/register", async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    // Check if email already exists
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "Email already registered"
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role
+    });
+
+    res.status(201).json({
+      message: "Registration successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+});
+
+
+
+// this is the post request to login a user
+app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Find user
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found"
+      });
     }
 
-    // 2. Check password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid password" });
+      return res.status(401).json({
+        message: "Invalid password"
+      });
     }
 
-    // 3. Create JWT
     const token = jwt.sign(
       {
         userId: user._id,
@@ -97,7 +144,6 @@ app.post("/api/users", async (req, res ,next ) => {
       { expiresIn: "1h" }
     );
 
-    // 4. Send token
     res.json({
       message: "Login successful",
       token,
@@ -110,10 +156,11 @@ app.post("/api/users", async (req, res ,next ) => {
     });
 
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      message: error.message
+    });
   }
 });
-
 
 // this is the get request to fetch all users from the database
 app.get("/api/users",async (req, res, next ) => {
