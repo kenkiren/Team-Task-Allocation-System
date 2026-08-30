@@ -2,7 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";  //its necessary to import dotenv to use .env variables
 dotenv.config();
-
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import Task from "./models/Task.js";
 import mongoose from "mongoose";
 
 
@@ -40,6 +42,16 @@ app.get("/", (req, res) => {
   res.json({ message: "Backend is working!" });
 });
 
+app.get("/api/tasks", async (req, res) => {
+  try {
+    const tasks = await Task.find().populate("assignedTo", "name email");
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 // this is the post request to create a new user in the database
 app.post("/api/users", async (req, res ,next ) => {
   console.log(req.body);
@@ -56,6 +68,52 @@ app.post("/api/users", async (req, res ,next ) => {
       }
   });
 
+  // this is the post request to login a user and generate a JWT token
+  app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // 1. Find user
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 2. Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    // 3. Create JWT
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // 4. Send token
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 // this is the get request to fetch all users from the database
 app.get("/api/users",async (req, res, next ) => {
@@ -67,6 +125,15 @@ app.get("/api/users",async (req, res, next ) => {
     }
 });
 
+app.post("/api/tasks", async (req, res) => {
+  try {
+    const task = await Task.create(req.body);
+
+    res.status(201).json(task);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 app.delete("/api/users/:id", async (req, res, next) => {
   try {
@@ -92,7 +159,22 @@ app.put("/api/users/:id", async (req, res, next) => {
   }
 });
 
+app.put("/api/tasks/:id/status", async (req, res) => {
+  try {
+    const { status } = req.body;
 
+    const task = await Task.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).populate("assignedTo", "name email"
+    );
+
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 app.use((err, req, res, next) => {
 //   console.error(err.stack);

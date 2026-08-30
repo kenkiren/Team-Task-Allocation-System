@@ -2,6 +2,8 @@ import { useEffect   ,useState } from "react"
 import './App.css'
 import UserForm from "./UserForm"
 // import Navbar from "./components/Navbar"
+import TaskForm from "./TaskForm"
+import TaskList from "./components/TaskList"
 
 function App() {
   const [message, setMessage] = useState("");
@@ -79,8 +81,9 @@ function App() {
   return (
     <>
     {/* <Navbar/> */}
-    
-    <h1>this is the data</h1>
+    < TaskForm/>
+    <TaskList/>
+    <h4>this is the data</h4>
 
     <div>
       {/* adding a delete button */}
@@ -97,7 +100,7 @@ function App() {
       ))}
     </div>
 
-      {editingId && (
+      {/* {editingId && (
         <div>
           <h2>Edit User</h2>
           <input
@@ -129,10 +132,10 @@ function App() {
             Save Changes
           </button>
         </div>
-      )}
+      )} */}
 
-      <h2>Add New User</h2>
-    <UserForm onAddUser={addUser} />
+      {/* <h2>Add New User</h2> */}
+    {/* <UserForm onAddUser={addUser} /> */}
 
       
 
