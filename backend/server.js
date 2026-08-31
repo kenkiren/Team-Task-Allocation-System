@@ -116,6 +116,7 @@ app.post("/api/register", async (req, res) => {
 
 // this is the post request to login a user
 app.post("/api/login", async (req, res) => {
+  
   try {
     const { email, password } = req.body;
 
