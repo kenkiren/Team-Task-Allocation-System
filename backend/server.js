@@ -44,7 +44,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Backend is working!" });
 });
 
-app.get("/api/tasks", async (req, res) => {
+app.get("/api/tasks", authMiddleware, async (req, res) => {
   try {
     const tasks = await Task.find().populate("assignedTo", "name email");
     res.json(tasks);
