@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import Task from "./models/Task.js";
 import mongoose from "mongoose";
 import authMiddleware from "./middleware/authMiddleware.js"; 
-
+import roleMiddleware from "./middleware/roleMiddleware.js";
 
 
 const app = express();// in simple words this line creates an instance of the Express application, which is used to define routes, middleware, and other server configurations. It serves as the main entry point for handling incoming HTTP requests and sending responses back to clients. then app.use(express.json())- this line is used to parse incoming JSON data in the request body.
@@ -44,14 +44,34 @@ app.get("/", (req, res) => {
   res.json({ message: "Backend is working!" });
 });
 
-app.get("/api/tasks", authMiddleware, async (req, res) => {
-  try {
-    const tasks = await Task.find().populate("assignedTo", "name email");
-    res.json(tasks);
+app.get("/api/tasks", authMiddleware, roleMiddleware("manager"),
+ async (req, res) => {
+ try {
+      const tasks = await Task.find()
+        .populate("assignedTo", "name email");
+
+      res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+// this is the get request to get the tasks assigned to the user
+app.get(
+  "/api/tasks/my",
+  authMiddleware,
+  roleMiddleware("employee"),
+  async (req, res) => {
+    try {
+      const tasks = await Task.find({
+        assignedTo: req.user.userId
+      }).populate("assignedTo", "name email");
+
+      res.json(tasks);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+);
 
 
 // this is the post request to create a new user in the database
@@ -173,7 +193,7 @@ app.get("/api/users",async (req, res, next ) => {
     }
 });
 
-app.post("/api/tasks", async (req, res) => {
+app.post("/api/tasks",authMiddleware, roleMiddleware("manager"), async (req, res) => {
   try {
     const task = await Task.create(req.body);
 
