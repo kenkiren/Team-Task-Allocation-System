@@ -62,7 +62,8 @@ app.get(
   roleMiddleware("employee"),
   async (req, res) => {
     try {
-      const tasks = await Task.find({
+      const tasks = await Task.find(
+        {
         assignedTo: req.user.userId
       }).populate("assignedTo", "name email");
 

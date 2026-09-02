@@ -5,8 +5,8 @@
   color: var(--accent);
   background: var(--accent-bg);
   border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+  transition: border-color 0.2s ease-in-out, outline 0.2s ease-in-out;
+  
 
   &:hover {
     border-color: var(--accent-border);
