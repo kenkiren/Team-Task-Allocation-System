@@ -227,23 +227,36 @@ app.put("/api/users/:id", async (req, res, next) => {
     next(err);
   }
 });
+app.put(
+  "/api/tasks/:id/status",
+  authMiddleware,
+  roleMiddleware("employee"),
+  async (req, res) => {
+    try {
+      const { status } = req.body;
 
-app.put("/api/tasks/:id/status", async (req, res) => {
-  try {
-    const { status } = req.body;
+      const task = await Task.findOne({
+        _id: req.params.id,
+        assignedTo: req.user.userId
+      });
 
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true }
-    ).populate("assignedTo", "name email"
-    );
+      if (!task) {
+        return res.status(404).json({
+          message: "Task not found or not assigned to you"
+        });
+      }
 
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+      task.status = status;
+      await task.save();
+
+      res.json(task);
+    } catch (error) {
+      res.status(500).json({
+        message: error.message
+      });
+    }
   }
-});
+);
 
 app.use((err, req, res, next) => {
 //   console.error(err.stack);
