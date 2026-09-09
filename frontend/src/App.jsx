@@ -5,6 +5,7 @@ import UserForm from "./UserForm"
 import TaskForm from "./TaskForm"
 import TaskList from "./components/TaskList"
 import Login from "./components/Login"
+import ManagerDashboard from "./components/ManagerDashboard";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -84,14 +85,16 @@ function App() {
 
   return (
     <>
-    {!loggedInUser ? (
+  {!loggedInUser ? (
   <Login onLogin={setLoggedInUser} />
+) : loggedInUser.role === "manager" ? (
+  <ManagerDashboard />
 ) : (
-  <h1>Welcome {loggedInUser.name}</h1>
+  <h1>Employee Dashboard</h1>
 )}
     {/* <Navbar/> */}
-    < TaskForm/>
-    <TaskList/>
+    {/* < TaskForm/> */}
+    {/* <TaskList/> */}
     <h4>this is the data</h4>
 
     <div>
