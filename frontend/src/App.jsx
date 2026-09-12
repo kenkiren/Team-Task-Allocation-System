@@ -2,10 +2,11 @@ import { useEffect   ,useState } from "react"
 import './App.css'
 import UserForm from "./UserForm"
 // import Navbar from "./components/Navbar"
-import TaskForm from "./TaskForm"
+import TaskForm from "./components/TaskForm"
 import TaskList from "./components/TaskList"
 import Login from "./components/Login"
 import ManagerDashboard from "./components/ManagerDashboard";
+import EmployeeDashboard from "./components/EmployeeDashboard";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -90,7 +91,7 @@ function App() {
 ) : loggedInUser.role === "manager" ? (
   <ManagerDashboard />
 ) : (
-  <h1>Employee Dashboard</h1>
+  <EmployeeDashboard />
 )}
     {/* <Navbar/> */}
     {/* < TaskForm/> */}
@@ -99,7 +100,7 @@ function App() {
 
     <div>
       {/* adding a delete button */}
-      {users.map((user) => (
+      {/* {users.map((user) => (
         <div key={user._id}>
           <p>Name: {user.name}</p>
           
@@ -109,7 +110,7 @@ function App() {
           <button  onClick={() => deleteUser(user._id)} >Delete</button>
           <button onClick={() => updatedUser(user._id)}  >Update</button>
         </div>
-      ))}
+      ))} */}
     </div>
 
       {/* {editingId && (

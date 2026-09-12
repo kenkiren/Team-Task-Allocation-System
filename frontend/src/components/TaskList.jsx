@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 
 
-
 function TaskList() {
     
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/tasks")
+    fetch("http://localhost:5000/api/tasks  ", {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem("token")}`
+      }
+    })
       .then((res) => res.json())
       .then((data) => setTasks(data))
       .catch((err) => console.error(err));
@@ -22,7 +25,8 @@ function TaskList() {
       {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body: JSON.stringify({ status })
       }

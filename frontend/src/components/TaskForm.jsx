@@ -33,7 +33,8 @@ function TaskForm() {
       const response = await fetch("http://localhost:5000/api/tasks", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          authorization: `Bearer ${localStorage.getItem("token")}`
         },
         body: JSON.stringify(formData)
       });
