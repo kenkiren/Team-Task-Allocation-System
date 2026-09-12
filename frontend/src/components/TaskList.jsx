@@ -36,12 +36,15 @@ function TaskList({role}) {
     );
 
     const updatedTask = await response.json();
+    console.log("Updated task:", updatedTask);
 
     setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task._id === id ? updatedTask : task
-      )
-    );
+  prevTasks.map((task) =>
+    task._id === id
+      ? { ...task, status: updatedTask.status }
+      : task
+  )
+);
   } catch (error) {
     console.error(error);
   }

@@ -9,7 +9,10 @@ import ManagerDashboard from "./components/ManagerDashboard";
 import EmployeeDashboard from "./components/EmployeeDashboard";
 
 function App() {
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loggedInUser, setLoggedInUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
@@ -82,16 +85,28 @@ function App() {
   }
 }
 
+function handleLogout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  setLoggedInUser(null);
+}
+
 
 
   return (
     <>
   {!loggedInUser ? (
   <Login onLogin={setLoggedInUser} />
-) : loggedInUser.role === "manager" ? (
-  <ManagerDashboard />
 ) : (
-  <EmployeeDashboard />
+  <>
+    <button onClick={handleLogout}>Logout</button>
+
+    {loggedInUser.role === "manager" ? (
+      <ManagerDashboard />
+    ) : (
+      <EmployeeDashboard />
+    )}
+  </>
 )}
     {/* <Navbar/> */}
     {/* < TaskForm/> */}

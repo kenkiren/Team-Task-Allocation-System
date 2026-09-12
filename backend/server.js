@@ -230,26 +230,35 @@ app.put("/api/users/:id", async (req, res, next) => {
 app.put(
   "/api/tasks/:id/status",
   authMiddleware,
-  roleMiddleware("employee"),
   async (req, res) => {
     try {
       const { status } = req.body;
 
-      const task = await Task.findOne({
-        _id: req.params.id,
-        assignedTo: req.user.userId
-      });
+      let task;
+
+      if (req.user.role === "manager") {
+        task = await Task.findById(req.params.id);
+      } else {
+        task = await Task.findOne({
+          _id: req.params.id,
+          assignedTo: req.user.userId
+        });
+      }
 
       if (!task) {
         return res.status(404).json({
-          message: "Task not found or not assigned to you"
+          message: "Task not found or you don't have permission"
         });
       }
 
       task.status = status;
       await task.save();
 
-      res.json(task);
+      const updatedTask = await Task.findById(task._id)
+        .populate("assignedTo", "name email");
+
+      res.json(updatedTask);
+
     } catch (error) {
       res.status(500).json({
         message: error.message
