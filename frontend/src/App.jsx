@@ -1,5 +1,5 @@
 import { useEffect   ,useState } from "react"
-import './App.css'
+// import "./styles/global.css"
 import UserForm from "./UserForm"
 // import Navbar from "./components/Navbar"
 import TaskForm from "./components/TaskForm"
@@ -7,12 +7,14 @@ import TaskList from "./components/TaskList"
 import Login from "./components/Login"
 import ManagerDashboard from "./components/ManagerDashboard";
 import EmployeeDashboard from "./components/EmployeeDashboard";
+import Register from "./components/Register";
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(() => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
+  const [showRegister, setShowRegister] = useState(false);
 
   const [message, setMessage] = useState("");
   const [users, setUsers] = useState([]);
@@ -96,77 +98,23 @@ function handleLogout() {
   return (
     <>
   {!loggedInUser ? (
-  <Login onLogin={setLoggedInUser} />
+  showRegister ? (
+    <Register onRegistered={() => setShowRegister(false)} />
+  ) : (
+    <Login onLogin={setLoggedInUser}
+    onRegister={() => setShowRegister(true)} />
+  )
+) : loggedInUser.role === "manager" ? (
+  <ManagerDashboard />
 ) : (
-  <>
-    <button onClick={handleLogout}>Logout</button>
-
-    {loggedInUser.role === "manager" ? (
-      <ManagerDashboard />
-    ) : (
-      <EmployeeDashboard />
-    )}
-  </>
+  <EmployeeDashboard />
 )}
     {/* <Navbar/> */}
     {/* < TaskForm/> */}
     {/* <TaskList/> */}
-    <h4>this is the data</h4>
+    {/* <h4>this is the data</h4> */}
 
-    <div>
-      {/* adding a delete button */}
-      {/* {users.map((user) => (
-        <div key={user._id}>
-          <p>Name: {user.name}</p>
-          
-          <p>Email: {user.email}</p> 
-          
-          <p>Age: {user.age}</p>
-          <button  onClick={() => deleteUser(user._id)} >Delete</button>
-          <button onClick={() => updatedUser(user._id)}  >Update</button>
-        </div>
-      ))} */}
-    </div>
-
-      {/* {editingId && (
-        <div>
-          <h2>Edit User</h2>
-          <input
-            type="text"
-            name="name"
-            value={editData.name}
-            onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-            placeholder="Name"
-          />
-          <input
-            type="email"
-            name="email"
-            value={editData.email}
-            onChange={(e) => setEditData({ ...editData, email: e.target.value })}
-            placeholder="Email"
-          />
-          <input
-            type="number"
-            name="age"
-            value={editData.age}
-            onChange={(e) => setEditData({ ...editData, age: e.target.value })}
-            placeholder="Age"
-          />
-          <button onClick={() => {
-              // Handle the update logic here (e.g., send a PUT request to the backend)
-              // After updating, reset the editing state
-              saveUser();
-            }} >
-            Save Changes
-          </button>
-        </div>
-      )} */}
-
-      {/* <h2>Add New User</h2> */}
-    {/* <UserForm onAddUser={addUser} /> */}
-
-      
-
+    
 
     </>
   )

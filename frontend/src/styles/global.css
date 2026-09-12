@@ -1,0 +1,23 @@
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+
+  --background: #f5f7fb;
+  --surface: #ffffff;
+
+  --text: #1f2937;
+  --text-muted: #6b7280;
+
+  --border: #e5e7eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--background);
+  color: var(--text);
+}
