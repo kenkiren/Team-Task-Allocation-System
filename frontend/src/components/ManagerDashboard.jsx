@@ -6,7 +6,7 @@ function ManagerDashboard() {
       <h1>Manager Dashboard</h1>
 
       <TaskForm />
-      <TaskList />
+      <TaskList role="manager"/>
     </div>
   );
 }

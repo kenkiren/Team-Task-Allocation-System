@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 
 
-function TaskList() {
+function TaskList({role}) {
     
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/tasks  ", {
+    fetch(
+      role==="manager" ? 
+      "http://localhost:5000/api/tasks" 
+      : "http://localhost:5000/api/tasks/my", {
       headers: {
         authorization: `Bearer ${localStorage.getItem("token")}`
       }

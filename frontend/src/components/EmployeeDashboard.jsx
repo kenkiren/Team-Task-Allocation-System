@@ -5,7 +5,7 @@ function EmployeeDashboard() {
     <div>
       <h1>Employee Dashboard</h1>
 
-      <TaskList />
+      <TaskList role= "employee" />
     </div>
   );
 }
