@@ -20,4 +20,10 @@ body {
   font-family: Arial, sans-serif;
   background: var(--background);
   color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  cursor: pointer;
 }
