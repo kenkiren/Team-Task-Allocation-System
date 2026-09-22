@@ -1,6 +1,7 @@
 # Team Task Allocation System
 
 A full-stack task management application that helps managers assign and monitor tasks while allowing employees to view and update the tasks assigned to them.
+It is a role-based access control application that provides different functionality to managers and employees.
 
 ## Features
 
